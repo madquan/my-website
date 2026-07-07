@@ -1,0 +1,510 @@
+ <!DOCTYPE html>
+ <html lang="zh-CN">
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+ <title>林墨 · 个人主页</title>
+ <style>
+ *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+ html{scroll-behavior:smooth;font-size:16px}
+ body{font-family:'Noto Sans SC','Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#0d0d0d;color:#f5f2ec;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+ img{max-width:100%;display:block}
+ a{color:#f97316;text-decoration:none;transition:color .3s}
+ a:hover{color:#fb923c}
+ ::selection{background:#f97316;color:#0d0d0d}
+ ::-webkit-scrollbar{width:6px}
+ ::-webkit-scrollbar-track{background:#1a1a1a}
+ ::-webkit-scrollbar-thumb{background:#f97316;border-radius:3px}
+ .navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,0.6);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid rgba(249,115,22,0.12);transition:all .4s}
+ .navbar.scrolled{background:rgba(13,13,13,0.92);border-bottom-color:rgba(249,115,22,0.25)}
+ .navbar .logo{font-size:1.25rem;font-weight:800;letter-spacing:-0.02em;color:#f5f2ec}
+ .navbar .logo span{color:#f97316}
+ .nav-links{display:flex;gap:0.25rem;list-style:none}
+ .nav-links a{padding:0.4rem 0.9rem;font-size:0.82rem;font-weight:500;color:rgba(245,242,236,0.7);border-radius:6px;transition:all .3s;white-space:nowrap}
+ .nav-links a:hover,.nav-links a.active{color:#f97316;background:rgba(249,115,22,0.1)}
+ .menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+ .menu-toggle span{width:24px;height:2px;background:#f5f2ec;border-radius:2px;transition:all .3s}
+ .menu-toggle.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+ .menu-toggle.active span:nth-child(2){opacity:0}
+ .menu-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+ .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;padding:7rem 2rem 4rem;overflow:hidden}
+ .hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,0.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+ .hero-bg-orbe{position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(249,115,22,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+ .hero-bg-orbe2{position:absolute;bottom:-20%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(251,146,60,0.05) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+ .hero-content{position:relative;z-index:2;text-align:center;max-width:900px}
+ .ip-avatar{width:160px;height:160px;margin:0 auto 2rem;position:relative}
+ .ip-avatar svg{width:100%;height:100%}
+ .ip-avatar-ring{position:absolute;inset:-8px;border:1.5px solid rgba(249,115,22,0.25);border-radius:50%;animation:spin 20s linear infinite}
+ .ip-avatar-ring::before{content:'';position:absolute;top:-2px;left:50%;width:8px;height:8px;background:#f97316;border-radius:50%;transform:translateX(-50%)}
+ @keyframes spin{to{transform:rotate(360deg)}}
+ .hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:900;letter-spacing:-0.03em;line-height:1.1;margin-bottom:0.75rem}
+ .hero h1 .highlight{background:linear-gradient(135deg,#f97316,#fb923c,#f97316);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease-in-out infinite}
+ @keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+ .hero .tagline{font-size:clamp(1rem,2vw,1.35rem);color:rgba(245,242,236,0.6);font-weight:400;max-width:600px;margin:0 auto 2rem;letter-spacing:0.02em}
+ .hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+ .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 2rem;border-radius:8px;font-weight:600;font-size:0.95rem;transition:all .3s;cursor:pointer;border:none;font-family:inherit}
+ .btn-primary{background:#f97316;color:#0d0d0d}
+ .btn-primary:hover{background:#fb923c;transform:translateY(-2px);box-shadow:0 8px 30px rgba(249,115,22,0.3)}
+ .btn-outline{background:transparent;color:#f5f2ec;border:1.5px solid rgba(245,242,236,0.25)}
+ .btn-outline:hover{border-color:#f97316;color:#f97316;transform:translateY(-2px)}
+ .scroll-indicator{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(245,242,236,0.35);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;animation:bounce 2s infinite}
+ .scroll-indicator .line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(249,115,22,0.4),transparent)}
+ @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+ .section{padding:5rem 2rem;position:relative}
+ .section-inner{max-width:1100px;margin:0 auto}
+ .section-label{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#f97316;margin-bottom:0.75rem;padding:0.25rem 0.75rem;border:1px solid rgba(249,115,22,0.2);border-radius:4px}
+ .section-title{font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:0.75rem;color:#f5f2ec}
+ .section-desc{font-size:1.05rem;color:rgba(245,242,236,0.55);max-width:600px;margin-bottom:3rem}
+ .text-center{text-align:center}
+ .text-center .section-desc{margin-left:auto;margin-right:auto}
+ .section-divider{width:60px;height:2px;background:#f97316;margin:0 auto 1rem}
+ .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:3rem;align-items:start}
+ .about-visual{position:relative}
+ .about-avatar{width:100%;max-width:320px;aspect-ratio:1;border-radius:4px;overflow:hidden;position:relative;border:1.5px solid rgba(249,115,22,0.2)}
+ .about-avatar svg{width:100%;height:100%;display:block}
+ .about-avatar .deco-line{position:absolute;bottom:-12px;right:-12px;width:60%;height:2px;background:#f97316}
+ .about-avatar .deco-line2{position:absolute;bottom:-12px;right:-12px;width:2px;height:60%;background:#f97316}
+ .about-text h3{font-size:1.3rem;font-weight:700;margin-bottom:0.5rem}
+ .about-text .role{color:#f97316;font-weight:600;font-size:0.9rem;margin-bottom:1.25rem;display:block}
+ .about-text p{color:rgba(245,242,236,0.65);margin-bottom:1rem;font-size:0.95rem}
+ .skill-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1.5rem}
+ .skill-tag{padding:0.35rem 1rem;border:1px solid rgba(249,115,22,0.2);border-radius:20px;font-size:0.78rem;color:rgba(245,242,236,0.8);transition:all .3s}
+ .skill-tag:hover{border-color:#f97316;color:#f97316;background:rgba(249,115,22,0.08)}
+ .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.5rem}
+ .project-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:2rem;transition:all .4s;position:relative;overflow:hidden}
+ .project-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:#f97316;transition:height .4s}
+ .project-card:hover{transform:translateY(-4px);border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.04)}
+ .project-card:hover::before{height:100%}
+ .project-card .icon{width:40px;height:40px;border:1.5px solid rgba(249,115,22,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem;color:#f97316}
+ .project-card h4{font-size:1.1rem;font-weight:700;margin-bottom:0.4rem}
+ .project-card p{font-size:0.88rem;color:rgba(245,242,236,0.5);margin-bottom:1rem;line-height:1.5}
+ .project-card .tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+ .project-card .tags span{padding:0.2rem 0.6rem;border-radius:4px;font-size:0.7rem;background:rgba(249,115,22,0.1);color:#f97316;font-weight:500}
+ .kb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+ .kb-item{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:6px;transition:all .3s;background:rgba(255,255,255,0.02)}
+ .kb-item:hover{border-color:rgba(249,115,22,0.2);transform:translateX(4px);background:rgba(249,115,22,0.04)}
+ .kb-item .dot{width:8px;height:8px;border-radius:50%;background:#f97316;flex-shrink:0}
+ .kb-item .info{flex:1;min-width:0}
+ .kb-item .info h5{font-size:0.9rem;font-weight:600;margin-bottom:0.15rem}
+ .kb-item .info p{font-size:0.78rem;color:rgba(245,242,236,0.45)}
+ .kb-item .arrow{color:rgba(249,115,22,0.4);font-size:0.8rem;transition:all .3s}
+ .kb-item:hover .arrow{color:#f97316;transform:translateX(3px)}
+ .github-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2.5rem}
+ .github-stat{padding:1.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:8px;text-align:center;background:rgba(255,255,255,0.02)}
+ .github-stat .num{font-size:2rem;font-weight:900;color:#f97316;line-height:1}
+ .github-stat .label{font-size:0.78rem;color:rgba(245,242,236,0.45);margin-top:0.4rem}
+ .github-repos{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+ .repo-card{padding:1.2rem 1.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:6px;transition:all .3s;background:rgba(255,255,255,0.02)}
+ .repo-card:hover{border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.04)}
+ .repo-card .repo-name{font-weight:600;font-size:0.95rem;color:#f5f2ec}
+ .repo-card .repo-name svg{vertical-align:middle;margin-right:6px;fill:currentColor}
+ .repo-card .repo-desc{font-size:0.8rem;color:rgba(245,242,236,0.45);margin-top:0.3rem}
+ .repo-card .repo-meta{display:flex;gap:1rem;margin-top:0.6rem;font-size:0.72rem;color:rgba(245,242,236,0.35)}
+ .repo-card .repo-meta .lang-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+ .repo-card .repo-meta span{display:inline-flex;align-items:center}
+ .partners-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
+ .partner-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:8px;transition:all .3s;background:rgba(255,255,255,0.02);text-align:center;min-height:100px}
+ .partner-card:hover{border-color:rgba(249,115,22,0.2);transform:translateY(-3px);background:rgba(249,115,22,0.04)}
+ .partner-card .partner-icon{font-size:2rem;margin-bottom:0.5rem;opacity:0.6}
+ .partner-card .partner-name{font-size:0.82rem;font-weight:600;color:rgba(245,242,236,0.7)}
+ .partner-card .partner-desc{font-size:0.7rem;color:rgba(245,242,236,0.35);margin-top:0.2rem}
+ .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+ .contact-info-list{display:flex;flex-direction:column;gap:1.25rem}
+ .contact-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:6px;transition:all .3s;background:rgba(255,255,255,0.02)}
+ .contact-item:hover{border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.04)}
+ .contact-item .ci-icon{width:40px;height:40px;border:1.5px solid rgba(249,115,22,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;color:#f97316}
+ .contact-item .ci-text{flex:1}
+ .contact-item .ci-text h5{font-size:0.85rem;font-weight:600;margin-bottom:0.1rem}
+ .contact-item .ci-text p{font-size:0.78rem;color:rgba(245,242,236,0.45)}
+ .contact-form{display:flex;flex-direction:column;gap:1rem}
+ .contact-form input,.contact-form textarea{padding:0.9rem 1.2rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#f5f2ec;font-size:0.9rem;font-family:inherit;transition:all .3s;outline:none}
+ .contact-form input:focus,.contact-form textarea:focus{border-color:#f97316;background:rgba(249,115,22,0.06)}
+ .contact-form input::placeholder,.contact-form textarea::placeholder{color:rgba(245,242,236,0.3)}
+ .contact-form textarea{min-height:120px;resize:vertical}
+ .contact-form button{padding:0.9rem 2rem;background:#f97316;color:#0d0d0d;border:none;border-radius:6px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:inherit;align-self:flex-start}
+ .contact-form button:hover{background:#fb923c;transform:translateY(-2px);box-shadow:0 8px 30px rgba(249,115,22,0.25)}
+ .footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(255,255,255,0.05)}
+ .footer .social-links{display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.5rem}
+ .footer .social-links a{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid rgba(255,255,255,0.08);border-radius:50%;color:rgba(245,242,236,0.4);transition:all .3s;font-size:1rem}
+ .footer .social-links a:hover{border-color:#f97316;color:#f97316;transform:translateY(-3px)}
+ .footer p{font-size:0.8rem;color:rgba(245,242,236,0.3)}
+ @media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:2rem}.about-visual{display:flex;justify-content:center}.contact-grid{grid-template-columns:1fr;gap:2rem}}
+ @media(max-width:768px){.navbar{padding:0 1rem}.nav-links{position:fixed;top:64px;left:0;width:100%;flex-direction:column;background:rgba(13,13,13,0.98);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:1rem;gap:0;border-bottom:1px solid rgba(249,115,22,0.12);transform:translateY(-110%);opacity:0;pointer-events:none;transition:all .4s}.nav-links.open{transform:translateY(0);opacity:1;pointer-events:all}.nav-links a{padding:0.8rem 1rem;display:block;border-radius:0;border-bottom:1px solid rgba(255,255,255,0.04)}.nav-links a:last-child{border-bottom:none}.menu-toggle{display:flex}.section{padding:3.5rem 1.25rem}.projects-grid,.github-repos{grid-template-columns:1fr}.partners-grid{grid-template-columns:repeat(2,1fr)}.github-summary{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:clamp(2rem,8vw,2.8rem)}}
+ @media(max-width:480px){.navbar{padding:0 0.75rem;height:56px}.navbar .logo{font-size:1.05rem}.ip-avatar{width:120px;height:120px}.partners-grid{grid-template-columns:repeat(2,1fr)}.github-summary{grid-template-columns:repeat(2,1fr)}.section-title{font-size:1.4rem}.hero-actions{flex-direction:column;align-items:center}.btn{width:100%;justify-content:center}.kb-grid{grid-template-columns:1fr}.contact-form button{width:100%;text-align:center}}
+ .reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+ .reveal.visible{opacity:1;transform:translateY(0)}
+ </style>
+ </head>
+ <body>
+ 
+ <nav class="navbar" id="navbar">
+   <a href="#hero" class="logo">林<span>墨</span></a>
+   <button class="menu-toggle" id="menuToggle" aria-label="菜单">
+     <span></span><span></span><span></span>
+   </button>
+   <ul class="nav-links" id="navLinks">
+     <li><a href="#about">个人介绍</a></li>
+     <li><a href="#projects">AI项目</a></li>
+     <li><a href="#knowledge">产品知识库</a></li>
+     <li><a href="#github">GitHub</a></li>
+     <li><a href="#partners">合作联盟</a></li>
+     <li><a href="#contact">联系方式</a></li>
+   </ul>
+ </nav>
+ 
+ <section class="hero" id="hero">
+   <div class="hero-bg-grid"></div>
+   <div class="hero-bg-orbe"></div>
+   <div class="hero-bg-orbe2"></div>
+   <div class="hero-content">
+     <div class="ip-avatar">
+       <div class="ip-avatar-ring"></div>
+       <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="80" cy="80" r="76" fill="rgba(249,115,22,0.06)" stroke="rgba(249,115,22,0.15)" stroke-width="1.5"/>
+         <circle cx="80" cy="70" r="24" fill="rgba(249,115,22,0.12)" stroke="#f97316" stroke-width="1.5"/>
+         <circle cx="72" cy="66" r="3.5" fill="#f97316"/>
+         <circle cx="88" cy="66" r="3.5" fill="#f97316"/>
+         <circle cx="72" cy="66" r="1.5" fill="#0d0d0d"/>
+         <circle cx="88" cy="66" r="1.5" fill="#0d0d0d"/>
+         <path d="M72 78 Q80 84 88 78" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+         <rect x="56" y="96" width="48" height="30" rx="6" fill="rgba(249,115,22,0.08)" stroke="#f97316" stroke-width="1.2"/>
+         <line x1="56" y1="106" x2="38" y2="98" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+         <line x1="38" y1="98" x2="32" y2="88" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+         <line x1="104" y1="106" x2="122" y2="98" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+         <line x1="122" y1="98" x2="128" y2="88" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+         <rect x="60" y="102" width="40" height="6" rx="2" fill="rgba(249,115,22,0.15)"/>
+         <rect x="60" y="102" width="12" height="6" rx="2" fill="#f97316"/>
+       </svg>
+     </div>
+     <h1>用代码 <span class="highlight">重塑</span> 医疗知识边界</h1>
+     <p class="tagline">AI 工程师 · 医药 GEO 探索者 · 开源爱好者 —— 在数据与临床之间架一座桥</p>
+     <div class="hero-actions">
+       <a href="#projects" class="btn btn-primary">查看项目 →</a>
+       <a href="#contact" class="btn btn-outline">联系我</a>
+     </div>
+   </div>
+   <div class="scroll-indicator">
+     <span>向下探索</span>
+     <div class="line"></div>
+   </div>
+ </section>
+ 
+ <section class="section" id="about">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">About</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">个人介绍</h2>
+       <p class="section-desc">从临床数据到知识图谱，从 NLP 到 GEO 内容策略——用技术让信息流动更有效率</p>
+     </div>
+     <div class="about-grid">
+       <div class="about-visual reveal">
+         <div class="about-avatar">
+           <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <rect x="4" y="4" width="312" height="312" rx="4" stroke="rgba(249,115,22,0.2)" stroke-width="1.5" fill="rgba(249,115,22,0.03)"/>
+             <circle cx="160" cy="120" r="50" stroke="#f97316" stroke-width="1.8" fill="rgba(249,115,22,0.06)"/>
+             <circle cx="144" cy="112" r="6" fill="#f97316" opacity="0.8"/>
+             <circle cx="176" cy="112" r="6" fill="#f97316" opacity="0.8"/>
+             <circle cx="144" cy="112" r="2.5" fill="#0d0d0d"/>
+             <circle cx="176" cy="112" r="2.5" fill="#0d0d0d"/>
+             <path d="M144 132 Q160 142 176 132" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+             <rect x="110" y="172" width="100" height="54" rx="6" stroke="#f97316" stroke-width="1.3" fill="rgba(249,115,22,0.05)"/>
+             <line x1="40" y1="220" x2="40" y2="280" stroke="rgba(249,115,22,0.1)" stroke-width="1"/>
+             <line x1="280" y1="220" x2="280" y2="280" stroke="rgba(249,115,22,0.1)" stroke-width="1"/>
+             <circle cx="40" cy="220" r="3" fill="rgba(249,115,22,0.15)"/>
+             <circle cx="280" cy="220" r="3" fill="rgba(249,115,22,0.15)"/>
+             <text x="160" y="292" text-anchor="middle" fill="rgba(249,115,22,0.3)" font-size="10" font-family="monospace">&lt;hello /&gt;</text>
+           </svg>
+           <div class="deco-line"></div>
+           <div class="deco-line2"></div>
+         </div>
+       </div>
+       <div class="about-text reveal">
+         <h3>林墨</h3>
+         <span class="role">AI 应用工程师 · 医药 GEO 策略师</span>
+         <p>前临床数据工程师，三年院内信息化经验让我深刻理解医疗场景的真实痛点。现在专注于用自然语言处理、知识图谱和大语言模型技术，解决医药行业的信息检索与内容生成难题。</p>
+         <p>我相信技术落地的关键在于"懂业务"——一个好的医疗 AI 系统不仅要跑得通算法，更要听得懂医生和患者的真实语言。</p>
+         <div class="skill-tags">
+           <span class="skill-tag">自然语言处理</span>
+           <span class="skill-tag">知识图谱</span>
+           <span class="skill-tag">LLM 应用</span>
+           <span class="skill-tag">医药 GEO</span>
+           <span class="skill-tag">Python</span>
+           <span class="skill-tag">数据工程</span>
+           <span class="skill-tag">Prompt Engineering</span>
+           <span class="skill-tag">信息检索</span>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+ 
+ <section class="section" id="projects" style="background:rgba(255,255,255,0.01)">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">Projects</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">AI 项目</h2>
+       <p class="section-desc">将算法变成工具，把模型做成产品——每一个项目都朝着"可用"前进</p>
+     </div>
+     <div class="projects-grid">
+       <div class="project-card reveal">
+         <div class="icon">&#x1f9ec;</div>
+         <h4>MedGeo 知识引擎</h4>
+         <p>基于医学知识图谱和 GEO 内容策略的智能检索系统，覆盖 2000+ 药品通用名与商品名，支持症状到药品到品牌的推理链路。</p>
+         <div class="tags"><span>知识图谱</span><span>GEO</span><span>NLP</span></div>
+       </div>
+       <div class="project-card reveal">
+         <div class="icon">&#x1f48a;</div>
+         <h4>医药搜索词工坊</h4>
+         <p>GEO 强转化搜索词生成工具，从疾病到症状到药品到购买意图，自动拆解用户搜索路径，输出高价值长尾词库。</p>
+         <div class="tags"><span>LLM</span><span>SEO/GEO</span><span>数据分析</span></div>
+       </div>
+       <div class="project-card reveal">
+         <div class="icon">&#x1f4cb;</div>
+         <h4>临床实体对齐系统</h4>
+         <p>对多源异构的临床数据进行实体对齐、别名合并和标准化处理，保障知识库的数据一致性与推理准确性。</p>
+         <div class="tags"><span>实体对齐</span><span>数据清洗</span><span>知识工程</span></div>
+       </div>
+       <div class="project-card reveal">
+         <div class="icon">&#x1f916;</div>
+         <h4>通用意图识别框架</h4>
+         <p>基于模式匹配和 LLM 兜底的混合意图识别系统，支持医药、电商、客服等多场景快速适配与在线热更新。</p>
+         <div class="tags"><span>意图识别</span><span>对话系统</span><span>混合架构</span></div>
+       </div>
+       <div class="project-card reveal">
+         <div class="icon">&#x1f4ca;</div>
+         <h4>知识库自动构建管线</h4>
+         <p>从原始数据到结构化知识库的全自动 ETL 管线，支持周期性增量更新、冲突检测和数据质量报表输出。</p>
+         <div class="tags"><span>ETL</span><span>自动化</span><span>数据治理</span></div>
+       </div>
+       <div class="project-card reveal">
+         <div class="icon">&#x1f50d;</div>
+         <h4>AI 内容策略分析平台</h4>
+         <p>结合 LLM 和大模型 API 的内容竞争力分析工具，帮助品牌在 AI 搜索时代抢占生成式引擎的推荐入口。</p>
+         <div class="tags"><span>GEO 策略</span><span>内容分析</span><span>AIGC</span></div>
+       </div>
+     </div>
+   </div>
+ </section>
+ 
+ <section class="section" id="knowledge">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">Knowledge Base</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">产品知识库</h2>
+       <p class="section-desc">持续积累的医药知识资产，从药品信息到疾病认知，结构化的数据才有生命力</p>
+     </div>
+     <div class="kb-grid">
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>药品别名库</h5><p>18,000+ 药品通用名到商品名映射，覆盖主流 OTC 与处方药</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>疾病—症状知识图谱</h5><p>1,200+ 疾病节点与 6,000+ 症状关联关系，支持多跳推理</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>GEO 搜索意图标注</h5><p>60,000+ 医药搜索词的意图分类、购买阶段和品牌关联标注</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>修饰词标准化词典</h5><p>症状修饰、程度等级、时间频次等医学修饰语的标准化词表</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>实体别名自动构建</h5><p>基于规则和 LLM 的实体别名挖掘管线，每月自动更新增量</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>常见病症问答库</h5><p>1,500+ 高频疾病问答对，覆盖诊前、诊中、诊后全场景</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>品牌竞品关系图谱</h5><p>400+ 药企、药品品牌之间的竞争与替代关系结构化数据</p></div>
+         <span class="arrow">→</span>
+       </a>
+       <a href="#" class="kb-item reveal">
+         <div class="dot"></div>
+         <div class="info"><h5>医学语料库（中文）</h5><p>清洗后的中文医学语料 20 万篇，用于领域模型微调和检索增强</p></div>
+         <span class="arrow">→</span>
+       </a>
+     </div>
+   </div>
+ </section>
+ 
+ <section class="section" id="github" style="background:rgba(255,255,255,0.01)">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">GitHub</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">开源贡献</h2>
+       <p class="section-desc">代码共享是技术人的默契——这里有一些我在做的开源项目和工具</p>
+     </div>
+     <div class="github-summary reveal">
+       <div class="github-stat"><div class="num">20+</div><div class="label">仓库总数</div></div>
+       <div class="github-stat"><div class="num">1.2k</div><div class="label">Star 累计</div></div>
+       <div class="github-stat"><div class="num">600+</div><div class="label">提交数</div></div>
+       <div class="github-stat"><div class="num">86</div><div class="label">Fork 总数</div></div>
+     </div>
+     <div class="github-repos">
+       <a href="#" class="repo-card reveal">
+         <div class="repo-name">
+           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"/></svg>
+           medgeo-knowledge-engine
+         </div>
+         <div class="repo-desc">医学知识图谱构建与检索引擎，支持 GEO 内容策略生成</div>
+         <div class="repo-meta">
+           <span><span class="lang-dot" style="background:#3572A5;"></span>Python</span>
+           <span>★ 48</span>
+           <span>🍴 12</span>
+         </div>
+       </a>
+       <a href="#" class="repo-card reveal">
+         <div class="repo-name">
+           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"/></svg>
+           entity-alignment-toolkit
+         </div>
+         <div class="repo-desc">多源医学实体对齐与别名合并工具集</div>
+         <div class="repo-meta">
+           <span><span class="lang-dot" style="background:#3572A5;"></span>Python</span>
+           <span>★ 36</span>
+           <span>🍴 8</span>
+         </div>
+       </a>
+       <a href="#" class="repo-card reveal">
+         <div class="repo-name">
+           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"/></svg>
+           intent-recognizer
+         </div>
+         <div class="repo-desc">混合架构通用意图识别框架，规则引擎加 LLM 兜底</div>
+         <div class="repo-meta">
+           <span><span class="lang-dot" style="background:#f1e05a;"></span>Python</span>
+           <span>★ 28</span>
+           <span>🍴 6</span>
+         </div>
+       </a>
+       <a href="#" class="repo-card reveal">
+         <div class="repo-name">
+           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"/></svg>
+           geo-search-toolkit
+         </div>
+         <div class="repo-desc">GEO 搜索词生成与内容策略分析工具</div>
+         <div class="repo-meta">
+           <span><span class="lang-dot" style="background:#3572A5;"></span>Python</span>
+           <span>★ 22</span>
+           <span>🍴 5</span>
+         </div>
+       </a>
+     </div>
+     <div style="text-align:center;margin-top:2rem" class="reveal">
+       <a href="#" class="btn btn-outline">查看全部仓库 →</a>
+     </div>
+   </div>
+ </section>
+ 
+ <section class="section" id="partners">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">Partners</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">合作联盟</h2>
+       <p class="section-desc">与优秀的团队一起做有难度但正确的事</p>
+     </div>
+     <div class="partners-grid">
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f3e5;</div><div class="partner-name">医渡科技</div><div class="partner-desc">医学数据合作</div></div>
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f916;</div><div class="partner-name">深度求索</div><div class="partner-desc">LLM 技术协作</div></div>
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f4ca;</div><div class="partner-name">DataWhale</div><div class="partner-desc">开源社区伙伴</div></div>
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f48a;</div><div class="partner-name">药智网</div><div class="partner-desc">药品数据支持</div></div>
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f4dd;</div><div class="partner-name">丁香园</div><div class="partner-desc">医学内容合作</div></div>
+       <div class="partner-card reveal"><div class="partner-icon">&#x1f310;</div><div class="partner-name">OpenKG</div><div class="partner-desc">知识图谱共建</div></div>
+     </div>
+   </div>
+ </section>
+ 
+ <section class="section" id="contact" style="background:rgba(255,255,255,0.01)">
+   <div class="section-inner">
+     <div class="text-center reveal">
+       <span class="section-label">Contact</span>
+       <div class="section-divider"></div>
+       <h2 class="section-title">联系方式</h2>
+       <p class="section-desc">无论是项目合作还是技术讨论，欢迎随时联系</p>
+     </div>
+     <div class="contact-grid">
+       <div class="contact-info-list reveal">
+         <div class="contact-item"><div class="ci-icon">&#x1f4e7;</div><div class="ci-text"><h5>电子邮件</h5><p>linmo@example.com</p></div></div>
+         <div class="contact-item"><div class="ci-icon">&#x1f4ac;</div><div class="ci-text"><h5>微信</h5><p>LinMo_AI</p></div></div>
+         <div class="contact-item"><div class="ci-icon">&#x1f419;</div><div class="ci-text"><h5>GitHub</h5><p>github.com/linmo-ai</p></div></div>
+         <div class="contact-item"><div class="ci-icon">&#x1f426;</div><div class="ci-text"><h5>X (Twitter)</h5><p>@linmo_ai</p></div></div>
+         <div class="contact-item"><div class="ci-icon">&#x1f4f1;</div><div class="ci-text"><h5>公众号</h5><p>林墨的AI笔记</p></div></div>
+       </div>
+       <form class="contact-form reveal" onsubmit="event.preventDefault();alert('感谢留言！我会尽快回复。');this.reset()">
+         <input type="text" placeholder="你的名字" required>
+         <input type="email" placeholder="你的邮箱" required>
+         <input type="text" placeholder="主题">
+         <textarea placeholder="说点什么……" required></textarea>
+         <button type="submit">发送消息 →</button>
+       </form>
+     </div>
+   </div>
+ </section>
+ 
+ <footer class="footer">
+   <div class="social-links">
+     <a href="#" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12 24 5.37 18.63 0 12 0z"/></svg></a>
+     <a href="#" aria-label="X"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+     <a href="#" aria-label="微信公众号"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm2.825 3.482c-2.02 0-3.84.742-5.044 1.962-1.151 1.172-1.63 2.778-1.229 4.32.418 1.56 1.776 2.673 3.426 2.673.463 0 .924-.073 1.353-.215a.616.616 0 01.512.06l1.082.637a.23.23 0 00.118.038.202.202 0 00.193-.207c0-.05-.02-.1-.034-.15l-.26-.98a.424.424 0 01.152-.478c1.252-.923 1.985-2.387 1.985-3.9170-2.73-2.178-4.882-4.99-4.882zm-1.31 1.982c.423 0 .764.35.764.778a.77.77 0 01-.764.777.77.77 0 01-.764-.777c0-.429.341-.778.764-.778zm3.82 0c.423 0 .764.35.764.778a.77.77 0 01-.764.777.77.77 0 01-.764-.777c0-.429.341-.778.764-.778z"/></svg></a>
+     <a href="#" aria-label="知乎"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.19 0c-.96 2.438-2.398 4.548-4.246 6.422l2.064 1.667c.594-.629 1.181-1.268 1.722-1.958l.003 6.69c-.499.264-1.206.895-1.931 1.722-1.208 1.376-2.368 3.15-2.858 4.776h5.199l.047 4.388 3.697-4.388h2.637V8.63l.036-.006c2.346 2.547 4.207 5.156 5.22 7.795l2.188-.666c-1.019-2.67-2.847-5.32-5.124-7.814l2.453-2.197-.576-.524c-.843.76-1.859 1.677-2.828 2.584V0z"/></svg></a>
+     <a href="#" aria-label="掘金"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14.316l7.454-5.88-2.022-1.625L12 11.1l-5.432-4.288-2.022 1.625 7.454 5.88zm0-7.247l2.89-2.298L12 2.453l-2.89 2.318L12 7.069zm0 11.266l-7.454-5.88L2.524 12l-2.022 1.625L12 22.748l11.498-9.123L21.476 12l-2.022 1.625L12 19.535z"/></svg></a>
+   </div>
+   <p>© 2026 林墨 · 用代码重塑知识边界 · Built with ♥</p>
+ </footer>
+ 
+ <script>
+ const toggle = document.getElementById('menuToggle');
+ const links = document.getElementById('navLinks');
+ toggle.addEventListener('click', () => {
+   toggle.classList.toggle('active');
+   links.classList.toggle('open');
+ });
+ links.querySelectorAll('a').forEach(a => {
+   a.addEventListener('click', () => {
+     toggle.classList.remove('active');
+     links.classList.remove('open');
+   });
+ });
+ const navbar = document.getElementById('navbar');
+ window.addEventListener('scroll', () => {
+   const y = window.scrollY;
+   if (y > 50) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+   const sections = document.querySelectorAll('.section, .hero');
+   let current = 'hero';
+   sections.forEach(sec => {
+     const top = sec.offsetTop - 120;
+     if (y >= top) current = sec.id || 'hero';
+   });
+   links.querySelectorAll('a').forEach(a => {
+     a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+   });
+ });
+ const revealEls = document.querySelectorAll('.reveal');
+ const observer = new IntersectionObserver((entries) => {
+   entries.forEach(entry => {
+     if (entry.isIntersecting) {
+       entry.target.classList.add('visible');
+     }
+   });
+ }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+ revealEls.forEach(el => observer.observe(el));
+ </script>
+ 
+ </body>
+ </html>
